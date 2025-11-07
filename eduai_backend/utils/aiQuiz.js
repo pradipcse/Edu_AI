@@ -1,27 +1,48 @@
-import axios from "axios";
+import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 dotenv.config();
 
+// Initialize the AI client
+const ai = new GoogleGenAI({
+  apiKey: process.env.AI_API_KEY
+});
+
 /**
- * Generate quiz questions from AI API
- * @param {string} topic - Topic of the quiz
- * @param {number} numQuestions - Number of questions to generate
+ * Generate AI quiz questions using Gemini
+ * @param {string} topic - Quiz topic
+ * @param {number} numQuestions - Number of questions
  * @returns Array of questions [{questionText, options, correctAnswer}]
  */
 export const generateQuizFromAI = async (topic, numQuestions = 5) => {
   try {
-    const response = await axios.post(
-      process.env.AI_API_URL,
-      { topic, numQuestions },
-      {
-        headers: { Authorization: `Bearer ${process.env.AI_API_KEY}` }
-      }
-    );
+    const prompt = `Generate ${numQuestions} multiple choice quiz questions about "${topic}".
+Return ONLY a JSON array like:
+[
+  {
+    "questionText": "Question here",
+    "options": ["Option 1","Option 2","Option 3","Option 4"],
+    "correctAnswer": "Option 1"
+  }
+]
+Do NOT include any explanation or text outside the JSON.`;
 
-    // Return questions array
-    return response.data.questions;
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [{ role: "user", text: prompt }]
+    });
+
+    // Get AI output text
+    const text = response.candidates?.[0]?.content?.[0]?.text || response.text;
+
+    // Clean backticks or whitespace
+    let cleanText = text.trim();
+    cleanText = cleanText.replace(/^```json/, '').replace(/```$/, '').trim();
+
+    // Parse JSON safely
+    const questions = JSON.parse(cleanText);
+    return questions;
   } catch (err) {
-    console.error("AI Quiz Generation Failed:", err.message);
+    console.error("AI Generation Error:", err);
     throw new Error("Failed to generate quiz from AI");
   }
 };

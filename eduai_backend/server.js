@@ -2,6 +2,9 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import courseRoutes from "./routes/courseRoutes.js";
+import quizRoutes from "./routes/quizRoutes.js";
+import practiceQuizRoutes from "./routes/practiceQuizRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -11,6 +14,10 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/quizzes", quizRoutes);               // teacher quizzes
+app.use("/api/practice-quizzes", practiceQuizRoutes); // student practice quizzes
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("✅ Server is running on http://localhost:3000"));

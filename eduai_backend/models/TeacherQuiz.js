@@ -1,19 +1,18 @@
 import mongoose from "mongoose";
 
+const questionSchema = new mongoose.Schema({
+  questionText: { type: String, required: true },
+  options: [{ type: String, required: true }],
+  correctAnswer: { type: String, required: true }
+});
+
 const teacherQuizSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true, trim: true },
+    title: { type: String, required: true },
     description: { type: String, default: "" },
     course: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
-    questions: [
-      {
-        questionText: { type: String, required: true },
-        options: [{ type: String }],
-        correctAnswer: { type: String }
-      }
-    ],
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    isActive: { type: Boolean, default: true }
+    questions: [questionSchema],
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }
   },
   { timestamps: true }
 );
