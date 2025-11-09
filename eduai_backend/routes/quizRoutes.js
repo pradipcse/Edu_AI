@@ -1,11 +1,28 @@
-import express from "express";
-import { protect, authorize } from "../middleware/authMiddleware.js";
-import { createAIQuiz, getAllTeacherQuizzes } from "../controllers/quizController.js";
+import mongoose from "mongoose";
 
-const router = express.Router();
+const studentQuizSchema = new mongoose.Schema({
+  student: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
+  topic: {
+    type: String,
+    required: true
+  },
+  questions: [
+    {
+      questionText: String,
+      options: [String],
+      correctAnswer: String
+    }
+  ],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    expires: 60 * 60 * 24 * 3 // Delete after **3 days**
+  }
+});
 
-// Teacher-only routes
-router.post("/ai", protect, authorize("teacher"), createAIQuiz);
-router.get("/", protect, authorize("teacher"), getAllTeacherQuizzes);
-
-export default router;
+const StudentQuiz = mongoose.model("StudentQuiz", studentQuizSchema);
+export default StudentQuiz;
