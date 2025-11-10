@@ -42,7 +42,15 @@ Do NOT include any explanation or text outside the JSON.`;
     const questions = JSON.parse(cleanText);
     return questions;
   } catch (err) {
-    console.error("AI Generation Error:", err);
+    // Log full error for debugging
+    console.error("AI Generation Error:", err.response?.data || err.message);
+
+    // Handle 503 overload specifically
+    if (err.response?.status === 503 || err.status === 503) {
+      throw new Error("AI model is currently overloaded. Please try again in a few seconds.");
+    }
+
+    // Fallback for other errors
     throw new Error("Failed to generate quiz from AI");
   }
 };

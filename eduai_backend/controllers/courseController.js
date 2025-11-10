@@ -17,7 +17,7 @@ export const createCourse = async (req, res) => {
   }
 };
 
-// Get all courses
+// Get all courses (accessible to all logged-in users)
 export const getAllCourses = async (req, res) => {
   try {
     const courses = await Course.find()
@@ -29,7 +29,7 @@ export const getAllCourses = async (req, res) => {
   }
 };
 
-// Enroll student in a course
+// Student enrolls in a course
 export const enrollInCourse = async (req, res) => {
   try {
     const course = await Course.findById(req.params.courseId);
@@ -49,7 +49,7 @@ export const enrollInCourse = async (req, res) => {
   }
 };
 
-// Get students in a course (teacher only)
+// Teacher views students in a course
 export const getStudentsInCourse = async (req, res) => {
   try {
     const course = await Course.findById(req.params.courseId).populate("students", "name email");

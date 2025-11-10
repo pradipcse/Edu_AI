@@ -4,7 +4,8 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
-import practiceQuizRoutes from "./routes/practiceQuizRoutes.js";
+import studentQuizRoutes from "./routes/studentQuizRoutes.js";
+
 
 dotenv.config();
 connectDB();
@@ -16,7 +17,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/quizzes", quizRoutes);               // teacher quizzes
-app.use("/api/practice-quizzes", practiceQuizRoutes); // student practice quizzes
+app.use("/api/student/quizzes", studentQuizRoutes);// student practice quizzes
 
 
 const PORT = process.env.PORT || 3000;
