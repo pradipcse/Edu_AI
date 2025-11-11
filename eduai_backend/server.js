@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors"
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -10,8 +11,16 @@ import studentQuizRoutes from "./routes/studentQuizRoutes.js";
 dotenv.config();
 connectDB();
 
+
 const app = express();
 app.use(express.json());
+
+app.use(cors({
+  origin: "http://localhost:5173", // Vite dev server
+  methods: ["GET","POST","PUT","DELETE"],
+  credentials: true
+}));
+
 
 // Routes
 app.use("/api/auth", authRoutes);

@@ -1,3 +1,4 @@
+import StudentPracticeQuiz from "../models/StudentPracticeQuiz.js"; // ✅ IMPORT MISSING
 import { generateQuizFromAI } from "../utils/aiQuiz.js";
 
 // Generate Practice Quiz (Student)

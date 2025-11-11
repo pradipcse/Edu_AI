@@ -1,55 +1,25 @@
-import { generateQuizFromAI } from "../utils/aiQuiz.js";
+import mongoose from "mongoose";
 
-// Generate Practice Quiz (Student)
-export const createStudentPracticeQuiz = async (req, res) => {
-  try {
-    const { topic, numQuestions } = req.body;
+const practiceQuizSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true, trim: true },
+    topic: { type: String, required: true },
+    questions: [
+      {
+        questionText: { type: String, required: true },
+        options: [{ type: String }],
+        correctAnswer: { type: String, required: true }
+      }
+    ],
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    expiresAt: { type: Date, default: () => new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) } // auto-expire after 3 days
+  },
+  { timestamps: true }
+);
 
-    if (!topic)
-      return res.status(400).json({ message: "Topic is required" });
+// Auto-delete after expiration
+practiceQuizSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-    const questions = await generateQuizFromAI(topic, numQuestions || 5);
+const StudentPracticeQuiz = mongoose.model("StudentPracticeQuiz", practiceQuizSchema);
 
-    const quiz = await StudentPracticeQuiz.create({
-      createdBy: req.user._id, // required by schema
-      title: topic,            // required by schema
-      topic,
-      questions
-    });
-
-    res.status(201).json({
-      message: "Practice quiz created",
-      quiz
-    });
-  } catch (err) {
-    console.error("Student Quiz Error:", err.message);
-    res.status(500).json({ message: err.message });
-  }
-};
-
-// Get student's own practice quizzes
-export const getMyPracticeQuizzes = async (req, res) => {
-  try {
-    const quizzes = await StudentPracticeQuiz.find({ createdBy: req.user._id }).sort({ createdAt: -1 });
-    res.json(quizzes);
-  } catch (err) {
-    console.error("Fetch Student Quiz Error:", err.message);
-    res.status(500).json({ message: err.message });
-  }
-};
-
-// Delete a practice quiz manually
-export const deletePracticeQuiz = async (req, res) => {
-  try {
-    const quiz = await StudentPracticeQuiz.findOneAndDelete({
-      _id: req.params.id,
-      createdBy: req.user._id
-    });
-
-    if (!quiz) return res.status(404).json({ message: "Quiz not found or unauthorized" });
-
-    res.json({ message: "Practice quiz deleted" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+export default StudentPracticeQuiz;
