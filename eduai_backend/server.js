@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
 import studentQuizRoutes from "./routes/studentQuizRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js"
 
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/quizzes", quizRoutes);               // teacher quizzes
 app.use("/api/student/quizzes", studentQuizRoutes);// student practice quizzes
+app.use("/api/dashboard", dashboardRoutes);
 
 
 const PORT = process.env.PORT || 3000;
