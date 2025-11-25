@@ -1,6 +1,6 @@
 // controllers/dashboardController.js
 import Course from "../models/Course.js";
-import Enrollment from "../models/Enrollment.js";
+import Enrollment from "../models/enrollment.js";
 import StudentPracticeQuiz from "../models/StudentPracticeQuiz.js";
 import TeacherQuiz from "../models/TeacherQuiz.js";
 import User from "../models/User.js";

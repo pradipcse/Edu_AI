@@ -54,3 +54,22 @@ export const deletePracticeQuiz = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// ✅ NEW CONTROLLER: Get single practice quiz by ID
+export const getSinglePracticeQuiz = async (req, res) => {
+  try {
+    const quiz = await StudentPracticeQuiz.findOne({
+      _id: req.params.id,
+      createdBy: req.user._id
+    });
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    res.json(quiz);
+  } catch (err) {
+    console.error("Fetch Single Quiz Error:", err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
