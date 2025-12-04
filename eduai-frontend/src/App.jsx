@@ -1,31 +1,29 @@
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
-import Register from "./components/Register"
-import Login from "./components/Login"
-
-const token = localStorage.getItem("token");
-
-// Define routes using createBrowserRouter
-const router = createBrowserRouter([
-  {
-    path: "/login",
-    element: <Login />
-  },
-  {
-    path: "/register",
-    element: <Register/>
-  },
-  // {
-  //   path: "/dashboard",
-  //   element: token ? <Dashboard /> : <Navigate to="/login" />
-  // },
-  {
-    path: "*",
-    element: <Navigate to="/login" />
-  }
-]);
+// src/App.jsx
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout/Layout";
+import Home from "./components/Home";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import Profile from "./components/Profile";
+// import About from "./pages/About";
+// import Services from "./pages/Services";
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {/* <Route path="/about" element={<About />} />
+          <Route path="/services" element={<Services />} /> */}
+
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
+  );
 }
 
 export default App;
