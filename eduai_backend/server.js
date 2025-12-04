@@ -26,7 +26,7 @@ app.use(cors({
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
-app.use("/api/quizzes", quizRoutes);               // teacher quizzes
+app.use("/api/quiz", quizRoutes);               // teacher quizzes
 app.use("/api/student/quizzes", studentQuizRoutes);// student practice quizzes
 app.use("/api/dashboard", dashboardRoutes);
 

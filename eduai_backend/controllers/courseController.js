@@ -17,12 +17,13 @@ export const createCourse = async (req, res) => {
   }
 };
 
-// Get all courses (accessible to all logged-in users)
+// Get all courses created by the logged-in teacher
 export const getAllCourses = async (req, res) => {
   try {
-    const courses = await Course.find()
+    const courses = await Course.find({ teacher: req.user._id }) // filter by teacher
       .populate("teacher", "name email")
       .populate("students", "name email");
+
     res.json(courses);
   } catch (err) {
     res.status(500).json({ message: err.message });

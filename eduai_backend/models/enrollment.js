@@ -6,11 +6,12 @@ const enrollmentSchema = new mongoose.Schema(
     course: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
     quizzesTaken: [
       {
-        quiz: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
+        quiz: { type: mongoose.Schema.Types.ObjectId, ref: "TeacherQuiz" },
         score: { type: Number, default: 0 },
         completedAt: { type: Date }
       }
     ]
+
   },
   { timestamps: true }
 );
