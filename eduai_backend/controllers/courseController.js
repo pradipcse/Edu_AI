@@ -1,4 +1,6 @@
 import Course from "../models/Course.js";
+import Enrollment from "../models/enrollment.js";
+import TeacherQuiz from "../models/TeacherQuiz.js";
 
 // Teacher creates a course
 export const createCourse = async (req, res) => {
@@ -20,11 +22,31 @@ export const createCourse = async (req, res) => {
 // Get all courses created by the logged-in teacher
 export const getAllCourses = async (req, res) => {
   try {
-    const courses = await Course.find({ teacher: req.user._id }) // filter by teacher
+    const courses = await Course.find({ teacher: req.user._id })
       .populate("teacher", "name email")
-      .populate("students", "name email");
+      .populate("students", "name email")
+      .lean();
 
     res.json(courses);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Get a single course by ID including quizzes
+export const getCourseById = async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.courseId)
+      .populate("teacher", "name email")
+      .lean();
+
+    if (!course) return res.status(404).json({ message: "Course not found" });
+
+    const quizzes = await TeacherQuiz.find({ course: course._id })
+      .select("title")
+      .lean();
+
+    res.json({ ...course, quizzes });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -36,13 +58,20 @@ export const enrollInCourse = async (req, res) => {
     const course = await Course.findById(req.params.courseId);
     if (!course) return res.status(404).json({ message: "Course not found" });
 
-    // Check if student already enrolled
-    if (course.students.includes(req.user._id)) {
-      return res.status(400).json({ message: "Already enrolled" });
-    }
+    const studentId = req.user._id;
 
-    course.students.push(req.user._id);
-    await course.save();
+    // 1️⃣ Check if already enrolled via Enrollment collection
+    const existingEnrollment = await Enrollment.findOne({ student: studentId, course: course._id });
+    if (existingEnrollment) return res.status(400).json({ message: "Already enrolled" });
+
+    // 2️⃣ Create Enrollment
+    await Enrollment.create({ student: studentId, course: course._id });
+
+    // 3️⃣ Update Course.students array if not already included
+    if (!course.students.includes(studentId)) {
+      course.students.push(studentId);
+      await course.save();
+    }
 
     res.json({ message: "Enrolled successfully", course });
   } catch (err) {

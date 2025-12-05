@@ -3,6 +3,7 @@ import { protect, authorize } from "../middleware/authMiddleware.js";
 import {
   createCourse,
   getAllCourses,
+  getCourseById,      // <-- import the new controller
   enrollInCourse,
   getStudentsInCourse
 } from "../controllers/courseController.js";
@@ -14,6 +15,9 @@ router.post("/", protect, authorize("teacher"), createCourse);
 
 // Get all courses (for dashboard)
 router.get("/", protect, getAllCourses);
+
+// Get single course by ID (for StudentCourseDetails)
+router.get("/:courseId", protect, getCourseById); // <-- add this
 
 // Student enrolls in course
 router.post("/:courseId/enroll", protect, authorize("student"), enrollInCourse);

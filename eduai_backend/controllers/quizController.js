@@ -1,10 +1,12 @@
+// controllers/quizController.js
+
 import TeacherQuiz from "../models/TeacherQuiz.js";
 import StudentQuizResult from "../models/StudentQuizResult.js";
 import Course from "../models/Course.js";
 import { generateQuizFromAI } from "../utils/aiQuiz.js";
 
 // =============================
-// Teacher: Create AI Quiz
+// TEACHER: Create AI Quiz
 // =============================
 export const createAIQuiz = async (req, res) => {
   try {
@@ -16,9 +18,9 @@ export const createAIQuiz = async (req, res) => {
     const course = await Course.findById(courseId);
     if (!course) return res.status(404).json({ message: "Course not found" });
 
-    // Ensure only the course teacher can create quiz
+    // Ensure the teacher owns the course
     if (course.teacher.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Not authorized to create quiz in this course" });
+      return res.status(403).json({ message: "Not authorized" });
     }
 
     const questions = await generateQuizFromAI(topic, numQuestions || 5);
@@ -28,18 +30,18 @@ export const createAIQuiz = async (req, res) => {
       description,
       course: courseId,
       questions,
-      createdBy: req.user._id
+      createdBy: req.user._id,
     });
 
     res.status(201).json(quiz);
   } catch (err) {
-    console.error("Quiz Creation Error:", err.message);
+    console.error("Quiz Creation Error:", err);
     res.status(500).json({ message: err.message });
   }
 };
 
 // =============================
-// Teacher: Get Quizzes Created By Logged-in Teacher
+// TEACHER: Get All Quizzes
 // =============================
 export const getAllTeacherQuizzes = async (req, res) => {
   try {
@@ -55,7 +57,7 @@ export const getAllTeacherQuizzes = async (req, res) => {
 };
 
 // =============================
-// Student: View Quizzes for a Course They Are Enrolled In
+// STUDENT: Get Quizzes for Course
 // =============================
 export const getQuizzesForStudent = async (req, res) => {
   try {
@@ -63,15 +65,16 @@ export const getQuizzesForStudent = async (req, res) => {
 
     const course = await Course.findOne({
       _id: courseId,
-      students: req.user._id
+      students: req.user._id,
     });
 
     if (!course) {
       return res.status(403).json({ message: "Not enrolled in this course" });
     }
 
-    const quizzes = await TeacherQuiz.find({ course: courseId })
-      .select("title description createdAt");
+    const quizzes = await TeacherQuiz.find({ course: courseId }).select(
+      "title description createdAt"
+    );
 
     res.json(quizzes);
   } catch (err) {
@@ -80,7 +83,26 @@ export const getQuizzesForStudent = async (req, res) => {
 };
 
 // =============================
-// Student: Submit Quiz & Save Score
+// STUDENT: Get Single Quiz (to TAKE)
+// =============================
+export const getSingleQuiz = async (req, res) => {
+  try {
+    const { quizId } = req.params;
+
+    const quiz = await TeacherQuiz.findById(quizId);
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    res.json(quiz);
+  } catch (err) {
+    console.error("Fetch Quiz Error:", err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// =============================
+// STUDENT: Submit Quiz
 // =============================
 export const submitQuiz = async (req, res) => {
   try {
@@ -98,34 +120,41 @@ export const submitQuiz = async (req, res) => {
     const formattedAnswers = [];
 
     quiz.questions.forEach((q) => {
-      const userAns = answers.find(a => a.questionId === q._id.toString());
+      const userAns = answers.find((a) => a.questionId === q._id.toString());
+
       if (userAns) {
         const isCorrect = q.correctAnswer === userAns.selectedAnswer;
         if (isCorrect) score++;
+
         formattedAnswers.push({
           questionId: q._id,
           selectedAnswer: userAns.selectedAnswer,
-          isCorrect
+          isCorrect,
         });
       }
     });
 
-    const result = await StudentQuizResult.create({
+    await StudentQuizResult.create({
       quiz: quizId,
       student: req.user._id,
       score,
       total: quiz.questions.length,
-      answers: formattedAnswers
+      answers: formattedAnswers,
     });
 
-    res.json({ message: "Quiz submitted successfully", score, total: quiz.questions.length });
+    res.json({
+      message: "Quiz submitted successfully",
+      score,
+      total: quiz.questions.length,
+    });
   } catch (err) {
+    console.error("Submit Quiz Error:", err.message);
     res.status(500).json({ message: err.message });
   }
 };
 
 // =============================
-// Teacher: Delete Quiz They Created
+// TEACHER: Delete Quiz
 // =============================
 export const deleteQuiz = async (req, res) => {
   try {
@@ -140,6 +169,7 @@ export const deleteQuiz = async (req, res) => {
 
     res.json({ message: "Quiz deleted successfully" });
   } catch (err) {
+    console.error("Delete Quiz Error:", err.message);
     res.status(500).json({ message: err.message });
   }
 };
