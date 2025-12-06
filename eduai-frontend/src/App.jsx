@@ -5,8 +5,6 @@ import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Profile from "./components/Profile";
-// import About from "./pages/About";
-// import Services from "./pages/Services";
 
 function App() {
   return (
