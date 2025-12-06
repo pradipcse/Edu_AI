@@ -1,8 +1,8 @@
-// controllers/quizController.js
-
+import mongoose from "mongoose";
 import TeacherQuiz from "../models/TeacherQuiz.js";
 import StudentQuizResult from "../models/StudentQuizResult.js";
 import Course from "../models/Course.js";
+import Enrollment from "../models/enrollment.js";
 import { generateQuizFromAI } from "../utils/aiQuiz.js";
 
 // =============================
@@ -13,12 +13,14 @@ export const createAIQuiz = async (req, res) => {
     const { title, description, topic, courseId, numQuestions } = req.body;
 
     if (!title || !courseId || !topic)
-      return res.status(400).json({ message: "Title, courseId, and topic are required" });
+      return res
+        .status(400)
+        .json({ message: "Title, courseId, and topic are required" });
 
     const course = await Course.findById(courseId);
     if (!course) return res.status(404).json({ message: "Course not found" });
 
-    // Ensure the teacher owns the course
+    // Ensure correct teacher
     if (course.teacher.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized" });
     }
@@ -63,13 +65,15 @@ export const getQuizzesForStudent = async (req, res) => {
   try {
     const { courseId } = req.params;
 
-    const course = await Course.findOne({
-      _id: courseId,
-      students: req.user._id,
+    const enrolled = await Enrollment.findOne({
+      student: req.user._id,
+      course: courseId,
     });
 
-    if (!course) {
-      return res.status(403).json({ message: "Not enrolled in this course" });
+    if (!enrolled) {
+      return res
+        .status(403)
+        .json({ message: "Not enrolled in this course" });
     }
 
     const quizzes = await TeacherQuiz.find({ course: courseId }).select(
@@ -78,12 +82,13 @@ export const getQuizzesForStudent = async (req, res) => {
 
     res.json(quizzes);
   } catch (err) {
+    console.error("Fetch Student Quizzes Error:", err.message);
     res.status(500).json({ message: err.message });
   }
 };
 
 // =============================
-// STUDENT: Get Single Quiz (to TAKE)
+// STUDENT: Get Single Quiz
 // =============================
 export const getSingleQuiz = async (req, res) => {
   try {
@@ -102,7 +107,7 @@ export const getSingleQuiz = async (req, res) => {
 };
 
 // =============================
-// STUDENT: Submit Quiz
+// STUDENT: Submit Quiz (UPDATED)
 // =============================
 export const submitQuiz = async (req, res) => {
   try {
@@ -116,36 +121,65 @@ export const submitQuiz = async (req, res) => {
     const quiz = await TeacherQuiz.findById(quizId);
     if (!quiz) return res.status(404).json({ message: "Quiz not found" });
 
-    let score = 0;
-    const formattedAnswers = [];
-
-    quiz.questions.forEach((q) => {
-      const userAns = answers.find((a) => a.questionId === q._id.toString());
-
-      if (userAns) {
-        const isCorrect = q.correctAnswer === userAns.selectedAnswer;
-        if (isCorrect) score++;
-
-        formattedAnswers.push({
-          questionId: q._id,
-          selectedAnswer: userAns.selectedAnswer,
-          isCorrect,
-        });
-      }
+    // Check enrollment
+    const enrolled = await Enrollment.findOne({
+      student: req.user._id,
+      course: quiz.course,
     });
+
+    if (!enrolled) {
+      return res
+        .status(403)
+        .json({ message: "You are not enrolled in this course" });
+    }
+
+    const clean = (s) =>
+      typeof s === "string" ? s.trim().toLowerCase() : "";
+
+    let score = 0;
+
+    const detailedAnswers = answers
+      .map((ans) => {
+        let qId;
+        try {
+          qId = new mongoose.Types.ObjectId(ans.questionId);
+        } catch {
+          return null;
+        }
+
+        const question = quiz.questions.id(qId);
+        if (!question) return null;
+
+        const isCorrect =
+          clean(question.correctAnswer) === clean(ans.selectedAnswer);
+
+        if (isCorrect) score += 1;
+
+        return {
+          questionId: ans.questionId,
+          questionText: question.questionText,
+          selectedAnswer: ans.selectedAnswer,
+          correctAnswer: question.correctAnswer,
+          isCorrect,
+        };
+      })
+      .filter(Boolean);
+
+    const total = quiz.questions.length;
 
     await StudentQuizResult.create({
       quiz: quizId,
       student: req.user._id,
       score,
-      total: quiz.questions.length,
-      answers: formattedAnswers,
+      total,
+      answers: detailedAnswers,
     });
 
     res.json({
       message: "Quiz submitted successfully",
       score,
-      total: quiz.questions.length,
+      total,
+      answers: detailedAnswers,
     });
   } catch (err) {
     console.error("Submit Quiz Error:", err.message);
@@ -166,7 +200,6 @@ export const deleteQuiz = async (req, res) => {
     }
 
     await quiz.deleteOne();
-
     res.json({ message: "Quiz deleted successfully" });
   } catch (err) {
     console.error("Delete Quiz Error:", err.message);
