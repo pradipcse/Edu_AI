@@ -1,68 +1,88 @@
-# 🎓 EduAI – AI-Powered Quiz Generator & Examination Platform
+<div align="center">
+<h1>Shahjalal University of Science and Technology, Sylhet</h1><br>
+Department of <br>
+<h2>Computer Science & Engineering</h2>
 
-EduAI is an intelligent **MERN-based AI quiz platform** where teachers can create quizzes (manually or using AI), and students can attempt them with instant scoring, analytics, and progress tracking.
+<img src="https://github.com/al-amin057/micro_project/assets/104164316/b8b92d25-1952-4323-9200-d9c535655aa4" width="250px"/>
+
+</div>
+
+<div>
+
+Course Name: <b>Web Tech </b> <br>
+Group: <b>43</b><br>
+Project Title: <b>EduAI – AI-Powered Quiz Generator & Examination Platform</b>
+
+## Team Members
+1. Pradip Pashi (**2020331105**)
+2. Amin Mahmud (**2020331071**)
+
+</div>
+
+<div align="center">
+<h1>EduAI – AI-Powered Quiz Generator & Examination Platform</h1>
+</div>
+
+<div align="justify">
+
+EduAI is a full-stack intelligent quiz and examination platform developed as part of Web Technology Course  under the guidance of  
+<a href="https://www.sust.edu/departments/cse/faculty/mehedi-cse@sust.edu"> Md. Mehedi Hasan </a>, Lecturer, CSE, SUST.
+
+This system enables teachers to create quizzes manually or generate them automatically using AI (GPT, Gemini, HuggingFace, or local LLMs via Ollama). Students can attempt quizzes, receive instant results, and track their performance over time.
+
+EduAI introduces secure authentication, role-based dashboards, and an interactive UI to create a seamless exam-taking experience. With integrated LLM-driven question generation, the platform significantly reduces teacher workload while enhancing student engagement and learning outcomes.
+
+</div>
 
 ---
 
-## 👥 Team Members
+## 🌐 Project Overview
 
-| Name | Registration No. |
-|------|------------------|
-| **Pradip Pashi** | 2020331105 |
-| **Amin Mahmud** | 2020331071 |
+EduAI provides:
 
----
-
-## 📌 Project Overview
-
-**EduAI** is a full-stack AI-driven examination and quiz system designed to make learning interactive, modern, and efficient.
-
-Teachers can manually create quizzes or automatically generate questions using advanced **LLM APIs** including GPT, Gemini, HuggingFace models, or local LLMs via **Ollama**.
-
-Students can attempt quizzes, track results, and monitor progress over time — all within a clean, responsive UI.
+- 🧠 **AI-Generated Quiz Creation** using GPT, Gemini, HuggingFace, or Ollama  
+- 📝 **Manual Quiz Builder** for teachers  
+- 🎯 **Instant Scoring & Feedback** for students  
+- 📊 **Performance Analytics & Progress Tracking**  
+- 🔐 **JWT-Based Authentication & Role System**  
+- 🖥️ **Modern, Responsive UI with React Router**  
 
 ---
 
-## 🎯 Objectives
+## 🧪 Features in Action
 
-- Provide secure student/teacher registration & login.
-- Allow teachers to create quizzes manually or using AI.
-- Integrate multiple AI providers for auto question generation.
-- Offer real-time grading with analytics & feedback.
-- Maintain secure JWT-based authentication.
-- Build separate dashboards for teachers and students.
-- Deliver a modern, responsive, React-based UI.
+- ✅ Teacher & Student authentication  
+- ✅ AI-powered question generation  
+- ✅ Manual quiz creation and editing  
+- ✅ Real-time scoring system  
+- ✅ Dashboard with analytics and past attempts  
+- ✅ Role-based access and route protection  
 
 ---
 
-## ✨ Key Features
+## 🚀 Tech Stack
 
-### 👩‍🏫 Teacher Module
-- Create quizzes manually or via AI question generation.
-- Select difficulty, topics, and question count.
-- Edit, update, and delete quizzes.
-- View student performance analytics and submissions.
+| Layer       | Technology |
+|-------------|------------|
+| Frontend    | React.js, Tailwind CSS, React Router |
+| Backend     | Node.js, Express.js |
+| Database    | MongoDB (Mongoose ORM) |
+| AI Engine   | OpenAI GPT, Gemini, HuggingFace, Ollama |
+| Authentication | JWT |
+| Deployment  | Render / Vercel (Planned) |
 
-### 👨‍🎓 Student Module
-- Register and log in securely.
-- Browse available quizzes.
-- Attempt quizzes with smooth UI interaction.
-- View instant scoring and detailed results.
-- Track progress and performance over time.
+---
 
-### 🔐 Authentication & Security
-- JWT-based authentication.
-- Role-based dashboards (Teacher / Student).
-- Protected backend routes using middleware.
+## 📁 Project Structure
 
-### 🤖 AI Question Generation
-Supported AI Providers:
-- **OpenAI GPT**
-- **Google Gemini**
-- **HuggingFace models**
-- **Local LLMs using Ollama**
-
-Teachers can instantly generate full quizzes from a single topic prompt.
-
-
-
+```plaintext
+EduAI/
+├── frontend/           # React Frontend (Tailwind, Router)
+│   ├── src/
+│   └── README.md
+├── backend/            # Node.js + Express Backend
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   └── server.js
+└── .git/               # Git version control
