@@ -1,1 +1,36 @@
 @import "tailwindcss";
+/* Gradient background animation */
+@keyframes gradient-x {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 10s ease infinite;
+}
+
+/* Pulse animations for floating shapes */
+@keyframes pulse-slow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.animate-pulse-slow { animation: pulse-slow 8s ease-in-out infinite; }
+.animate-pulse-slower { animation: pulse-slow 12s ease-in-out infinite; }
+
+/* Bounce animations for floating shapes */
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+.animate-bounce-slow { animation: bounce-slow 6s ease-in-out infinite; }
+.animate-bounce-slower { animation: bounce-slow 10s ease-in-out infinite; }
+
+/* Gradient text animation */
+@keyframes text-gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-text-gradient {
+  background-size: 200% 200%;
+  animation: text-gradient 5s ease infinite;
+}

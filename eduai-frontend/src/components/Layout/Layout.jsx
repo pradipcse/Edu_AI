@@ -1,4 +1,5 @@
 // src/components/Layout.jsx
+import Footer from "../Footer/Footer";
 import Navbar from "../Header/Navbar";
 
 export default function Layout({ children }) {
@@ -6,6 +7,7 @@ export default function Layout({ children }) {
     <>
       <Navbar />
       <main>{children}</main>
+      <Footer />
     </>
   );
 }
