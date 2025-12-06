@@ -2,8 +2,10 @@ import mongoose from "mongoose";
 
 const quizAnswerSchema = new mongoose.Schema({
   questionId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  questionText: { type: String, required: true },
   selectedAnswer: { type: String, required: true },
-  isCorrect: { type: Boolean, required: true }
+  correctAnswer: { type: String, required: true },
+  isCorrect: { type: Boolean, required: true },
 });
 
 const quizResultSchema = new mongoose.Schema(
