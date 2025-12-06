@@ -64,14 +64,5 @@ Supported AI Providers:
 
 Teachers can instantly generate full quizzes from a single topic prompt.
 
----
 
-## 🧠 System Architecture
 
-```mermaid
-flowchart LR
-    A[React Frontend] --> B[Node.js + Express Backend]
-    B --> C[(MongoDB Database)]
-    B --> D[AI Models (GPT / Gemini / HuggingFace / Ollama)]
-    Teacher --> A
-    Student --> A
